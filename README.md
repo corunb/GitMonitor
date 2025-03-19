@@ -48,6 +48,9 @@ m 芯片 ： GOOS=darwin GOARCH=arm64 go build -o xxx xxx.go
 
 ### 1.3 用法
 
+GitMonitor.go：无钉钉机器人通知功能；
+
+GitMonitor_DD.go：配置钉钉机器人通知功能；
 ```
 gitmonitor -u https://github.com/xxx/xxx.git -p /xxx/xxx [-t 10s/10m/10h]
 
