@@ -4,7 +4,12 @@
 
 ## 0x01  使用方法
 
-### 1.1 编译
+### 1.1 钉钉机器人
+
+<img width="637" alt="image" src="https://github.com/user-attachments/assets/2f204702-d5c8-4227-9435-fed75784d016" />
+
+
+### 1.2 编译
 
 * Linux
 
@@ -25,7 +30,7 @@ intel 芯片 ： GOOS=darwin GOARCH=amd64 go build -o xxx xxx.go
 m 芯片 ： GOOS=darwin GOARCH=arm64 go build -o xxx xxx.go
 ```
 
-### 1.2 用法
+### 1.3 用法
 
 ```
 gitmonitor -u https://github.com/xxx/xxx.git -p /xxx/xxx [-t 10s/10m/10h]
