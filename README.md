@@ -6,7 +6,20 @@
 
 ### 1.1 钉钉机器人
 
-<img width="637" alt="image" src="https://github.com/user-attachments/assets/2f204702-d5c8-4227-9435-fed75784d016" />
+从钉钉机器人设置中复制 webhook 和 加签秘钥，配置在脚本 GitMonitor_DD.go 中：
+
+```
+const(
+ defaultInterval = 300 * time.Second
+
+ // 钉钉 Webhook（如果为空，则不启用通知）
+ dingTalkWebhook = "https://oapi.dingtalk.com/robot/send?access_token=xxxxx"
+
+ // 钉钉密钥（为空则不启用加签）
+ dingTalkSecret = "SECxxxxx"
+
+) 
+```
 
 
 ### 1.2 编译
