@@ -12,3 +12,17 @@
 GOOS=linux GOARCH=amd64 go build -o xxx xxx.go
 ```
 
+* windows
+
+```
+GOOS=windows GOARCH=amd64 go build -o xxx.exe xxx.go
+```
+
+* macos
+
+```
+intel芯片 ： GOOS=darwin GOARCH=amd64 go build -o xxx xxx.go
+m芯片 ： GOOS=darwin GOARCH=arm64 go build -o xxx xxx.go
+```
+
+
