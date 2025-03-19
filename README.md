@@ -21,8 +21,19 @@ GOOS=windows GOARCH=amd64 go build -o xxx.exe xxx.go
 * macos
 
 ```
-intel芯片 ： GOOS=darwin GOARCH=amd64 go build -o xxx xxx.go
-m芯片 ： GOOS=darwin GOARCH=arm64 go build -o xxx xxx.go
+intel 芯片 ： GOOS=darwin GOARCH=amd64 go build -o xxx xxx.go
+m 芯片 ： GOOS=darwin GOARCH=arm64 go build -o xxx xxx.go
+```
+
+### 1.2 用法
+
+```
+gitmonitor -u https://github.com/xxx/xxx.git -p /xxx/xxx [-t 10s/10m/10h]
+
+    -u：指定目标地址。
+    -p：指定本地文件夹路径。
+    -t：自定义检测频率，10s(10秒)/10m(10分钟)/10h(10小时)，可自定义，默认5分钟。
+
 ```
 
 
