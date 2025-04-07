@@ -9,7 +9,7 @@
 
 ### 1.1 钉钉机器人
 
-从钉钉机器人设置中复制 webhook 和 加签秘钥，配置在脚本 GitMonitor_DD.go 中：
+从钉钉机器人设置中复制 webhook 和 加签秘钥，配置在脚本 GitMonitor.go 中：
 
 ```
 const(
@@ -48,9 +48,7 @@ m 芯片 ： GOOS=darwin GOARCH=arm64 go build -o xxx xxx.go
 
 ### 1.3 用法
 
-GitMonitor.go：无钉钉机器人通知功能；
-
-GitMonitor_DD.go：配置钉钉机器人通知功能；
+GitMonitor.go 机器人配置为空的话，即不使用机器人：
 ```
 gitmonitor -u https://github.com/xxx/xxx.git -p /xxx/xxx [-t 10s/10m/10h]
 
