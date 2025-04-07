@@ -22,35 +22,28 @@ type Config struct {
  RepoURL       string        `json:"repo_url"`       // GitHub项目地址
  LocalPath     string        `json:"local_path"`     // 本地同步目录
  CheckInterval time.Duration `json:"check_interval"` // 检测间隔
- DingTalkWebhook string        // 钉钉机器人 Webhook
- DingTalkSecret  string        // 钉钉机器人密钥 (可选)
+ DingTalkWebhook string
+ DingTalkSecret  string
 }
 
-const(
- defaultInterval = 300 * time.Second
-
- // 钉钉 Webhook（如果为空，则不启用通知）
- dingTalkWebhook = "https://oapi.dingtalk.com/robot/send?access_token=xxxxx"
-
- // 钉钉密钥（为空则不启用加签）
- dingTalkSecret = "SECxxxxx"
-
-) 
+const (
+ defaultInterval   = 300 * time.Second
+ dingTalkWebhook   = "https://oapi.dingtalk.com/robot/send?access_token=xxxxx"
+ dingTalkSecret    = "SECxxxxx"
+)
 
 func main() {
- // 从命令行参数获取项目地址和本地目录
  repoFlag := flag.String("u", "", "Git repository URL")
  pathFlag := flag.String("p", "", "Local directory path")
  intervalFlag := flag.Duration("t", defaultInterval, "检测间隔 (例如: 10s, 1m)")
  flag.Parse()
 
- // 使用提示
  if *repoFlag == "" || *pathFlag == "" {
-    fmt.Println(`用法: 
-    gitmonitor -u https://github.com/xxx/xxx.git -p /xxx/xxx [-t 10s/10m/10h]
-    -u：指定目标地址。
-    -p：指定本地文件夹路径。
-    -t：自定义检测频率，10s(10秒)/10m(10分钟)/10h(10小时)，可自定义，默认5分钟。`)
+  fmt.Println(`用法: 
+  gitmonitor -u https://github.com/xxx/xxx.git -p /xxx/xxx [-t 10s/10m/10h]
+  -u：指定目标地址。
+  -p：指定本地文件夹路径。
+  -t：自定义检测频率，默认5分钟。`)
   os.Exit(1)
  }
 
@@ -62,7 +55,6 @@ func main() {
   DingTalkSecret:  dingTalkSecret,
  }
 
- // 初始化仓库
  if err := initRepo(cfg); err != nil {
   exitWithError(fmt.Sprintf("仓库初始化失败: %v", err))
  }
@@ -78,7 +70,6 @@ func main() {
  }
 }
 
-// 初始化 Git 仓库
 func initRepo(cfg *Config) error {
  if _, err := os.Stat(cfg.LocalPath); os.IsNotExist(err) {
   fmt.Println("⏳ 本地目录不存在，正在克隆...")
@@ -92,14 +83,27 @@ func initRepo(cfg *Config) error {
   return nil
  }
 
+ // 如果目录存在但不是 Git 仓库，则初始化
  if _, err := runGitCommand(cfg.LocalPath, "rev-parse", "--is-inside-work-tree"); err != nil {
-  return fmt.Errorf("目录 %s 不是 Git 仓库", cfg.LocalPath)
+  fmt.Println("⚠️ 当前目录不是 Git 仓库，正在初始化为 Git 仓库...")
+  if _, err := runGitCommand(cfg.LocalPath, "init"); err != nil {
+   return fmt.Errorf("初始化 git 仓库失败: %w", err)
+  }
+  if _, err := runGitCommand(cfg.LocalPath, "remote", "add", "origin", cfg.RepoURL); err != nil {
+   return fmt.Errorf("添加远程仓库失败: %w", err)
+  }
+  if _, err := runGitCommand(cfg.LocalPath, "fetch", "origin"); err != nil {
+   return fmt.Errorf("fetch 失败: %w", err)
+  }
+  if _, err := runGitCommand(cfg.LocalPath, "reset", "--hard", "origin/HEAD"); err != nil {
+   return fmt.Errorf("reset 失败: %w", err)
+  }
+  fmt.Println("✅ Git 仓库初始化完成并同步")
  }
 
  return nil
 }
 
-// 仅同步新增/修改的文件，不同步删除文件
 func checkAndUpdate(cfg *Config) {
  fmt.Printf("\n⏳ 检测时间: %s\n", time.Now().Format("2006-01-02 15:04:05"))
 
@@ -152,7 +156,6 @@ func checkAndUpdate(cfg *Config) {
  }
 }
 
-// 发送钉钉消息（支持加签）
 func sendDingTalkMessage(webhook, secret, message string) error {
  var sign string
  var timestamp string
@@ -183,7 +186,6 @@ func sendDingTalkMessage(webhook, secret, message string) error {
  return nil
 }
 
-// 计算钉钉加签
 func generateDingTalkSign(secret, timestamp string) string {
  stringToSign := timestamp + "\n" + secret
  h := hmac.New(sha256.New, []byte(secret))
@@ -192,7 +194,6 @@ func generateDingTalkSign(secret, timestamp string) string {
  return url.QueryEscape(signature)
 }
 
-// 格式化文件列表
 func formatFileList(files []string) string {
  return "- " + string(bytes.Join(stringSliceToByteSlices(files), []byte("\n- ")))
 }
@@ -205,7 +206,6 @@ func stringSliceToByteSlices(ss []string) [][]byte {
  return bs
 }
 
-// 执行 Git 命令
 func runGitCommand(path string, args ...string) ([]byte, error) {
  cmd := exec.Command("git", append([]string{"-C", path}, args...)...)
  output, err := cmd.CombinedOutput()
